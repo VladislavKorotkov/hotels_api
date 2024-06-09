@@ -11,4 +11,13 @@ public class Address {
     private String city;
     private String county;
     private String postCode;
+
+    @Override
+    public String toString() {
+        return houseNumber +
+                " " + street +
+                ", " + city +
+                ", " + county +
+                ", " + postCode;
+    }
 }

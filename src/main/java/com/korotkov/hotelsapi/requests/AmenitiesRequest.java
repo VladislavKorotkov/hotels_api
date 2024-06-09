@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 public class AmenitiesRequest {
-    @NotEmpty(message = "Amenities list must not be empty")
+   // @NotEmpty(message = "Amenities list must not be empty")
     private List<String> amenities;
 }
