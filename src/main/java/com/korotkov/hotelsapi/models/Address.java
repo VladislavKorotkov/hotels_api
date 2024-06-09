@@ -21,7 +21,7 @@ public class Address {
         return houseNumber +
                 " " + street +
                 ", " + city +
-                ", " + county +
-                ", " + postCode;
+                ", " + postCode +
+                ", " + county;
     }
 }

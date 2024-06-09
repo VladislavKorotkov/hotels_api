@@ -64,7 +64,7 @@ public class HotelController {
     @PostMapping("/hotels")
     @ResponseStatus(HttpStatus.CREATED)
     public HotelResponse createHotel(
-            @Valid @RequestBody HotelRequest hotelRequest) {
+            @RequestBody @Valid HotelRequest hotelRequest) {
         return hotelService.createHotel(hotelRequest);
     }
 
