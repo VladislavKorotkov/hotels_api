@@ -1,6 +1,8 @@
 package com.korotkov.hotelsapi.services.impl;
 
+import com.korotkov.hotelsapi.exceptions.IncorrectParameter;
 import com.korotkov.hotelsapi.exceptions.ObjectNotFoundException;
+import com.korotkov.hotelsapi.models.Amenity;
 import com.korotkov.hotelsapi.models.Hotel;
 import com.korotkov.hotelsapi.repositories.HotelRepository;
 import com.korotkov.hotelsapi.requests.HotelRequest;
@@ -12,9 +14,11 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -36,7 +40,14 @@ public class HotelService implements com.korotkov.hotelsapi.services.HotelServic
 
     @Override
     public List<HotelResponse> searchHotels(String name, String brand, String city, String county, Set<String> amenities) {
-        return List.of();
+        List<Hotel> hotels = hotelRepository.findAll().stream()
+                .filter(hotel -> (name == null || hotel.getName().equalsIgnoreCase(name)) &&
+                        (brand == null || hotel.getBrand().equalsIgnoreCase(brand)) &&
+                        (city == null || hotel.getAddress().getCity().equalsIgnoreCase(city)) &&
+                        (county == null || hotel.getAddress().getCounty().equalsIgnoreCase(county)) &&
+                        (amenities == null || hotel.getAmenities().stream().map(Amenity::getName).collect(Collectors.toSet()).containsAll(amenities)))
+                .collect(Collectors.toList());
+        return HotelMapper.INSTANCE.toHotelResponseList(hotels);
     }
 
     @Override
@@ -49,16 +60,43 @@ public class HotelService implements com.korotkov.hotelsapi.services.HotelServic
 
     @Override
     @Transactional
-    public HotelResponse addAmenitiesToHotel(Long hotelId, List<String> amenities) {
+    public HotelFullInfoResponse addAmenitiesToHotel(Long hotelId, List<String> amenities) {
         Hotel hotel = getHotel(hotelId);
         hotel.getAmenities().addAll(amenityService.createAmenities(amenities));
         hotel = hotelRepository.save(hotel);
-        return HotelMapper.INSTANCE.toHotelResponse(hotel);
+        return HotelMapper.INSTANCE.toHotelFullInfoResponse(hotel);
     }
 
-    @Override
     public Map<String, Long> getHistogram(String param) {
-        return Map.of();
+        Map<String, Long> histogram = new HashMap<>();
+        switch (param) {
+            case "brand":
+                histogram = hotelRepository.findAll().stream()
+                        .collect(Collectors.groupingBy(Hotel::getBrand, Collectors.counting()));
+                break;
+            case "city":
+                histogram = hotelRepository.findAll().stream()
+                        .collect(Collectors.groupingBy(hotel -> hotel.getAddress().getCity(), Collectors.counting()));
+                break;
+            case "county":
+                histogram = hotelRepository.findAll().stream()
+                        .collect(Collectors.groupingBy(hotel -> hotel.getAddress().getCounty(), Collectors.counting()));
+                break;
+            case "amenities":
+                List<Hotel> allHotels = hotelRepository.findAll();
+                Map<String, Long> amenityCount = new HashMap<>();
+                for (Hotel hotel : allHotels) {
+                    for (Amenity amenity : hotel.getAmenities()) {
+                        amenityCount.put(amenity.getName(),
+                                amenityCount.getOrDefault(amenity.getName(), 0L) + 1);
+                    }
+                }
+                histogram = amenityCount;
+                break;
+            default:
+                throw new IncorrectParameter("Invalid parameter for histogram: " + param);
+        }
+        return histogram;
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Mapper
 public interface AmenityMapper {
+
     AmenityMapper INSTANCE = Mappers.getMapper(AmenityMapper.class);
 
     default Set<Amenity> toAmenities(List<String> amenities) {
