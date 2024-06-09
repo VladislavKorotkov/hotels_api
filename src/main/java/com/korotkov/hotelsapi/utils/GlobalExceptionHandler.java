@@ -1,6 +1,6 @@
 package com.korotkov.hotelsapi.utils;
 
-import com.korotkov.hotelsapi.exceptions.IncorrectParameter;
+import com.korotkov.hotelsapi.exceptions.IncorrectParameterException;
 import com.korotkov.hotelsapi.exceptions.ObjectNotFoundException;
 import com.korotkov.hotelsapi.responses.ApiError;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import java.util.List;
@@ -46,8 +45,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(IncorrectParameter.class)
-    public ResponseEntity<ApiError> handleIncorrectParameterException(IncorrectParameter ex) {
+    @ExceptionHandler(IncorrectParameterException.class)
+    public ResponseEntity<ApiError> handleIncorrectParameterException(IncorrectParameterException ex) {
         ApiError apiError = new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(),

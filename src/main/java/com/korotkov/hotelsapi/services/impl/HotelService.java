@@ -1,6 +1,6 @@
 package com.korotkov.hotelsapi.services.impl;
 
-import com.korotkov.hotelsapi.exceptions.IncorrectParameter;
+import com.korotkov.hotelsapi.exceptions.IncorrectParameterException;
 import com.korotkov.hotelsapi.exceptions.ObjectNotFoundException;
 import com.korotkov.hotelsapi.models.Amenity;
 import com.korotkov.hotelsapi.models.Hotel;
@@ -94,7 +94,7 @@ public class HotelService implements com.korotkov.hotelsapi.services.HotelServic
                 histogram = amenityCount;
                 break;
             default:
-                throw new IncorrectParameter("Invalid parameter for histogram: " + param);
+                throw new IncorrectParameterException("Invalid parameter for histogram: " + param);
         }
         return histogram;
     }

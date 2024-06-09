@@ -1,13 +1,18 @@
 package com.korotkov.hotelsapi.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name="hotel")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Hotel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
